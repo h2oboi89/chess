@@ -1,8 +1,9 @@
 "use strict";
 
-import { SQR_SIZE, BOARD_SIZE, PIECES } from "./constants.js";
+import { SQR_SIZE, BOARD_SIZE } from "./constants.js";
 import { updateFPS } from "./fps.js";
 import { drawBoard, drawPieces } from "./draw.js";
+import { Piece, COLOR, TYPE } from "./piece.js";
 
 const BOARD = new Array(BOARD_SIZE);
 const SELECTED = { x: -1, y: -1 };
@@ -17,39 +18,42 @@ const initBoard = () => {
     }
   }
 
-  BOARD[0][0] = PIECES.black.rook;
-  BOARD[1][0] = PIECES.black.knight;
-  BOARD[2][0] = PIECES.black.bishop;
-  BOARD[3][0] = PIECES.black.queen;
-  BOARD[4][0] = PIECES.black.king;
-  BOARD[5][0] = PIECES.black.bishop;
-  BOARD[6][0] = PIECES.black.knight;
-  BOARD[7][0] = PIECES.black.rook;
-  BOARD[0][1] = PIECES.black.pawn;
-  BOARD[1][1] = PIECES.black.pawn;
-  BOARD[2][1] = PIECES.black.pawn;
-  BOARD[3][1] = PIECES.black.pawn;
-  BOARD[4][1] = PIECES.black.pawn;
-  BOARD[5][1] = PIECES.black.pawn;
-  BOARD[6][1] = PIECES.black.pawn;
-  BOARD[7][1] = PIECES.black.pawn;
+  BOARD[0][0] = new Piece(COLOR.BLACK, TYPE.ROOK);
+  BOARD[1][0] = new Piece(COLOR.BLACK, TYPE.KNIGHT);
+  BOARD[2][0] = new Piece(COLOR.BLACK, TYPE.BISHOP);
+  BOARD[3][0] = new Piece(COLOR.BLACK, TYPE.QUEEN);
+  BOARD[4][0] = new Piece(COLOR.BLACK, TYPE.KING);
+  BOARD[5][0] = new Piece(COLOR.BLACK, TYPE.BISHOP);
+  BOARD[6][0] = new Piece(COLOR.BLACK, TYPE.KNIGHT);
+  BOARD[7][0] = new Piece(COLOR.BLACK, TYPE.ROOK);
 
-  BOARD[0][6] = PIECES.white.pawn;
-  BOARD[1][6] = PIECES.white.pawn;
-  BOARD[2][6] = PIECES.white.pawn;
-  BOARD[3][6] = PIECES.white.pawn;
-  BOARD[4][6] = PIECES.white.pawn;
-  BOARD[5][6] = PIECES.white.pawn;
-  BOARD[6][6] = PIECES.white.pawn;
-  BOARD[7][6] = PIECES.white.pawn;
-  BOARD[0][7] = PIECES.white.rook;
-  BOARD[1][7] = PIECES.white.knight;
-  BOARD[2][7] = PIECES.white.bishop;
-  BOARD[3][7] = PIECES.white.queen;
-  BOARD[4][7] = PIECES.white.king;
-  BOARD[5][7] = PIECES.white.bishop;
-  BOARD[6][7] = PIECES.white.knight;
-  BOARD[7][7] = PIECES.white.rook;
+  BOARD[0][1] = new Piece(COLOR.BLACK, TYPE.PAWN);
+  BOARD[1][1] = new Piece(COLOR.BLACK, TYPE.PAWN);
+  BOARD[2][1] = new Piece(COLOR.BLACK, TYPE.PAWN);
+  BOARD[3][1] = new Piece(COLOR.BLACK, TYPE.PAWN);
+  BOARD[4][1] = new Piece(COLOR.BLACK, TYPE.PAWN);
+  BOARD[5][1] = new Piece(COLOR.BLACK, TYPE.PAWN);
+  BOARD[6][1] = new Piece(COLOR.BLACK, TYPE.PAWN);
+  BOARD[7][1] = new Piece(COLOR.BLACK, TYPE.PAWN);
+
+
+  BOARD[0][6] = new Piece(COLOR.WHITE, TYPE.PAWN);
+  BOARD[1][6] = new Piece(COLOR.WHITE, TYPE.PAWN);
+  BOARD[2][6] = new Piece(COLOR.WHITE, TYPE.PAWN);
+  BOARD[3][6] = new Piece(COLOR.WHITE, TYPE.PAWN);
+  BOARD[4][6] = new Piece(COLOR.WHITE, TYPE.PAWN);
+  BOARD[5][6] = new Piece(COLOR.WHITE, TYPE.PAWN);
+  BOARD[6][6] = new Piece(COLOR.WHITE, TYPE.PAWN);
+  BOARD[7][6] = new Piece(COLOR.WHITE, TYPE.PAWN);
+
+  BOARD[0][7] = new Piece(COLOR.WHITE, TYPE.ROOK);
+  BOARD[1][7] = new Piece(COLOR.WHITE, TYPE.KNIGHT);
+  BOARD[2][7] = new Piece(COLOR.WHITE, TYPE.BISHOP);
+  BOARD[3][7] = new Piece(COLOR.WHITE, TYPE.QUEEN);
+  BOARD[4][7] = new Piece(COLOR.WHITE, TYPE.KING);
+  BOARD[5][7] = new Piece(COLOR.WHITE, TYPE.BISHOP);
+  BOARD[6][7] = new Piece(COLOR.WHITE, TYPE.KNIGHT);
+  BOARD[7][7] = new Piece(COLOR.WHITE, TYPE.ROOK);
 };
 
 const draw = () => {

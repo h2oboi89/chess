@@ -27,9 +27,11 @@ const drawBoard = (ctx, MOVE) => {
 const drawPieces = (ctx, board) => {
     for (let i = 0; i < board.length; i++) {
         for (let j = 0; j < board[i].length; j++) {
-            if (board[i][j] === null) continue;
+            var piece = board[i][j];
 
-            ctx.drawImage(board[i][j], i * SQR_SIZE + PIECE_OFFSET, j * SQR_SIZE + PIECE_OFFSET);
+            if (piece === null) continue;
+
+            ctx.drawImage(piece.Image, i * SQR_SIZE + PIECE_OFFSET, j * SQR_SIZE + PIECE_OFFSET);
         };
     }
 };
