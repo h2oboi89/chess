@@ -1,16 +1,14 @@
 "use strict";
 
-import { SQR_SIZE, BOARD_SIZE } from "./constants.js";
-import { updateFPS } from "./fps.js";
-import { drawBoard, drawPieces } from "./draw.js";
+import { BOARD_SIZE, SQR_SIZE } from "./constants.js";
 import { Piece, COLOR, TYPE } from "./piece.js";
+import { Point } from "./point.js";
 
-const BOARD = new Array(BOARD_SIZE);
-const SELECTED = { x: -1, y: -1 };
-let MOVE = { src: { x: -1, y: -1 }, dst: { x: -1, y: -1 } };
 let ctx;
 
 const initBoard = () => {
+  const BOARD = new Array(BOARD_SIZE);
+
   for (let i = 0; i < BOARD_SIZE; i++) {
     BOARD[i] = new Array(BOARD_SIZE);
     for (let j = 0; j < BOARD_SIZE; j++) {
@@ -54,86 +52,100 @@ const initBoard = () => {
   BOARD[5][7] = new Piece(COLOR.WHITE, TYPE.BISHOP);
   BOARD[6][7] = new Piece(COLOR.WHITE, TYPE.KNIGHT);
   BOARD[7][7] = new Piece(COLOR.WHITE, TYPE.ROOK);
+
+  return BOARD;
 };
 
-const draw = () => {
-  drawBoard(ctx, MOVE);
-  drawPieces(ctx, BOARD);
-};
+const initState = () => {
+  const STATE = {};
 
-const detectUserSelect = () => {
-  if (SELECTED.x !== -1 && SELECTED.y !== -1) {
-    if (MOVE.src.x !== -1 && MOVE.src.y !== -1) {
-      if (SELECTED.x === MOVE.src.x && SELECTED.y === MOVE.src.y) {
-        // Deselect Piece
-        MOVE.src = { x: -1, y: -1 };
+  STATE.BOARD = initBoard();
 
-        SELECTED.x = -1;
-        SELECTED.y = -1;
-        return;
-      }
-      else {
-        // Move Piece
-        MOVE.dst = { x: SELECTED.x, y: SELECTED.y };
+  STATE.TURN = COLOR.WHITE;
 
-        // TODO: check if legal move
-        BOARD[MOVE.dst.x][MOVE.dst.y] = BOARD[MOVE.src.x][MOVE.src.y];
-        BOARD[MOVE.src.x][MOVE.src.y] = null;
+  STATE.MOVE = { src: Point.DEFAULT, dst: Point.DEFAULT };
 
-        SELECTED.x = -1;
-        SELECTED.y = -1;
+  STATE.SELECTED = Point.DEFAULT;
 
-        MOVE.src = { x: -1, y: -1 };
-        MOVE.dst = { x: -1, y: -1 };
+  STATE.CAPTURED = { WHITE: [], BLACK: [] };
 
-        return;
-      }
-    }
+  // TODO: figure out if moves or entire board or something else
+  STATE.HISTORY = [];
 
-    if (BOARD[SELECTED.x][SELECTED.y] !== null) {
-      // Select Piece
-      MOVE.src = { x: SELECTED.x, y: SELECTED.y };
-      SELECTED.x = -1;
-      SELECTED.y = -1;
-    }
-    else {
-      MOVE.src = { x: -1, y: -1 };
-    }
+  return STATE;
+}
+
+const movePiece = (board, move) => {
+  board[move.dst.X][move.dst.Y] = board[move.src.X][move.src.Y];
+  board[move.src.X][move.src.Y] = null;
+}
+
+const changeTurn = () => {
+  if (STATE.TURN === COLOR.WHITE) {
+    STATE.TURN = COLOR.BLACK;
+  }
+  else{
+    STATE.TURN = COLOR.WHITE;
   }
 }
 
-const update = () => {
-  updateFPS();
-  detectUserSelect();
-};
+const checkForMoveDestination = () => {
+  if (STATE.SELECTED.equals(STATE.MOVE.src)) {
+    // Deselect Piece
+    STATE.MOVE.src = Point.DEFAULT;
+    STATE.SELECTED = Point.DEFAULT;
+    return;
+  }
+  else {
+    // Move Piece
+    STATE.MOVE.dst = Point.Copy(STATE.SELECTED);
 
-const mainLoop = () => {
-  update();
+    // TODO: check if legal move
+    movePiece(STATE.BOARD, STATE.MOVE);
 
-  draw();
+    changeTurn();
+    STATE.SELECTED = Point.DEFAULT;
+    STATE.MOVE.src = Point.DEFAULT;
+    STATE.MOVE.dst = Point.DEFAULT;
 
-  requestAnimationFrame(mainLoop);
+    return;
+  }
 }
 
-const onClick = (e) => {
-  let cx = e.offsetX;
-  let cy = e.offsetY;
+const checkForMoveSource = () => {
+  const piece = STATE.BOARD[STATE.SELECTED.X][STATE.SELECTED.Y];
+  if (piece !== null) {
+    if (piece.Color !== STATE.TURN) {
+      STATE.SELECTED = Point.DEFAULT;
+      return;
+    }
 
-  SELECTED.x = Math.floor(cx / SQR_SIZE);
-  SELECTED.y = Math.floor(cy / SQR_SIZE);
-
-  console.log(`Canvas ( ${cx}, ${cy} ); Board ( ${SELECTED} )`);
+    // Select Piece
+    STATE.MOVE.src = Point.Copy(STATE.SELECTED);
+    STATE.SELECTED = Point.DEFAULT;
+  }
+  else {
+    STATE.MOVE.src = Point.DEFAULT;
+  }
 };
 
-const onLoad = () => {
-  const canvas = document.getElementById("GUI");
-  ctx = canvas.getContext("2d");
+const detectUserSelect = () => {
+  if (STATE.SELECTED.equals(Point.DEFAULT)) { return; }
 
-  canvas.addEventListener("click", onClick);
+  if (STATE.MOVE.src.equals(Point.DEFAULT)) {
+    checkForMoveSource();
+  }
+  else {
+    checkForMoveDestination();
+  }
+}
 
-  initBoard();
+let STATE = initState();
 
-  requestAnimationFrame(mainLoop);
-};
+const updateState = () => { detectUserSelect(); };
 
-export { onLoad }
+const setSelected = (x, y) => {
+  STATE.SELECTED = new Point(Math.floor(x / SQR_SIZE), Math.floor(y / SQR_SIZE));
+}
+
+export { STATE, setSelected, updateState }

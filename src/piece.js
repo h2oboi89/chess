@@ -1,24 +1,10 @@
 'use strict';
 
-import { PIECES } from "./constants.js";
-
-const COLOR = {
-    WHITE: 0,
-    BLACK: 1
-};
+import { COLOR, TYPE, PIECES } from "./constants.js";
 
 const COLOR_MAP = [
     "WHITE", "BLACK"
 ];
-
-const TYPE = {
-    ROOK: 0,
-    KNIGHT: 1,
-    BISHOP: 2,
-    QUEEN: 3,
-    KING: 4,
-    PAWN: 5
-};
 
 const TYPE_MAP = [
     "ROOK", "KNIGHT", "BISHOP", "QUEEN", "KING", "PAWN"

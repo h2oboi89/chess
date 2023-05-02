@@ -9,3 +9,7 @@
 .hidden {
   visibility: hidden;
 }
+
+.block {
+  display: block;
+}

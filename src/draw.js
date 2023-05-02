@@ -1,6 +1,10 @@
 'use strict';
 
-import { SQR_SIZE, PIECE_OFFSET, BOARD_SIZE } from "./constants.js";
+import { SQR_SIZE, PIECE_OFFSET, BOARD_SIZE, COLOR } from "./constants.js";
+import { fps } from "./fps.js";
+
+const TURN_DIV = document.getElementById("TURN");
+const FPS_DIV = document.getElementById("FPS");
 
 const drawBoard = (ctx, MOVE) => {
     let white = true;
@@ -16,10 +20,10 @@ const drawBoard = (ctx, MOVE) => {
         white = !white;
     }
 
-    if (MOVE.src.x !== -1 && MOVE.src.y !== -1) {
+    if (MOVE.src.X !== -1 && MOVE.src.Y !== -1) {
         ctx.globalAlpha = 0.6;
         ctx.fillStyle = "blue";
-        ctx.fillRect(MOVE.src.x * SQR_SIZE, MOVE.src.y * SQR_SIZE, SQR_SIZE, SQR_SIZE)
+        ctx.fillRect(MOVE.src.X * SQR_SIZE, MOVE.src.Y * SQR_SIZE, SQR_SIZE, SQR_SIZE)
         ctx.globalAlpha = 1.0;
     }
 };
@@ -36,4 +40,36 @@ const drawPieces = (ctx, board) => {
     }
 };
 
-export { drawBoard, drawPieces };
+const drawCaptured = (ctx, captured) => {
+    // TODO: draw pieces 8 to a row
+};
+
+const drawTurn = (state) => {
+    // TODO: do by event of some kind
+    let turn;
+
+    switch (state.TURN) {
+        case COLOR.WHITE:
+            turn = "White to play";
+            break;
+        case COLOR.BLACK:
+            turn = "Black to play";
+            break;
+    }
+
+    TURN_DIV.innerHTML = turn;
+};
+
+const draw = (guiCtx, blackCtx, whiteCtx, state) => {
+    drawBoard(guiCtx, state.MOVE);
+    drawPieces(guiCtx, state.BOARD);
+    drawCaptured(blackCtx, state.CAPTURED.BLACK);
+    drawCaptured(whiteCtx, state.CAPTURED.WHITE);
+    drawTurn(state);
+};
+
+setInterval(() => {
+    FPS_DIV.innerHTML = `FPS: ${fps}`;
+}, 500);
+
+export { draw };
