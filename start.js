@@ -8,8 +8,6 @@ import { exec } from 'child_process';
 const port = 8125;
 
 const server = createServer(function (request, response) {
-    // console.log('request starting...');
-
     let filePath = '.' + request.url;
     if (filePath == './') {
         filePath = './index.html';
