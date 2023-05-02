@@ -39,7 +39,7 @@ class Piece {
     get Image() {
         let side = undefined;
 
-        switch (Color) {
+        switch (this.#color) {
             case COLOR.WHITE:
                 side = PIECES.white;
                 break;
@@ -51,7 +51,7 @@ class Piece {
                 return undefined;
         }
 
-        switch (Type) {
+        switch (this.#type) {
             case TYPE.ROOK: return side.rook;
             case TYPE.KNIGHT: return side.knight;
             case TYPE.BISHOP: return side.bishop;
