@@ -1,6 +1,10 @@
 'use strict';
 
-import { SQR_SIZE, PIECE_OFFSET, BOARD_SIZE } from "./constants.js";
+import { SQR_SIZE, PIECE_OFFSET, BOARD_SIZE, COLOR } from "./constants.js";
+import { fps } from "./fps.js";
+
+const TURN_DIV = document.getElementById("TURN");
+const FPS_DIV = document.getElementById("FPS");
 
 const drawBoard = (ctx, MOVE) => {
     let white = true;
@@ -40,11 +44,32 @@ const drawCaptured = (ctx, captured) => {
     // TODO: draw pieces 8 to a row
 };
 
+const drawTurn = (state) => {
+    // TODO: do by event of some kind
+    let turn;
+
+    switch (state.TURN) {
+        case COLOR.WHITE:
+            turn = "White to play";
+            break;
+        case COLOR.BLACK:
+            turn = "Black to play";
+            break;
+    }
+
+    TURN_DIV.innerHTML = turn;
+};
+
 const draw = (guiCtx, blackCtx, whiteCtx, state) => {
     drawBoard(guiCtx, state.MOVE);
     drawPieces(guiCtx, state.BOARD);
     drawCaptured(blackCtx, state.CAPTURED.BLACK);
     drawCaptured(whiteCtx, state.CAPTURED.WHITE);
+    drawTurn(state);
 };
+
+setInterval(() => {
+    FPS_DIV.innerHTML = `FPS: ${fps}`;
+}, 500);
 
 export { draw };

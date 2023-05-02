@@ -80,6 +80,15 @@ const movePiece = (board, move) => {
   board[move.src.X][move.src.Y] = null;
 }
 
+const changeTurn = () => {
+  if (STATE.TURN === COLOR.WHITE) {
+    STATE.TURN = COLOR.BLACK;
+  }
+  else{
+    STATE.TURN = COLOR.WHITE;
+  }
+}
+
 const checkForMoveDestination = () => {
   if (STATE.SELECTED.equals(STATE.MOVE.src)) {
     // Deselect Piece
@@ -94,6 +103,7 @@ const checkForMoveDestination = () => {
     // TODO: check if legal move
     movePiece(STATE.BOARD, STATE.MOVE);
 
+    changeTurn();
     STATE.SELECTED = Point.DEFAULT;
     STATE.MOVE.src = Point.DEFAULT;
     STATE.MOVE.dst = Point.DEFAULT;
@@ -103,7 +113,13 @@ const checkForMoveDestination = () => {
 }
 
 const checkForMoveSource = () => {
-  if (STATE.BOARD[STATE.SELECTED.X][STATE.SELECTED.Y] !== null) {
+  const piece = STATE.BOARD[STATE.SELECTED.X][STATE.SELECTED.Y];
+  if (piece !== null) {
+    if (piece.Color !== STATE.TURN) {
+      STATE.SELECTED = Point.DEFAULT;
+      return;
+    }
+
     // Select Piece
     STATE.MOVE.src = Point.Copy(STATE.SELECTED);
     STATE.SELECTED = Point.DEFAULT;

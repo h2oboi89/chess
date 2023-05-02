@@ -11,10 +11,16 @@
 <body>
   <div>
     <canvas id="black_captured" class="block" width="440" height="110"></canvas>
-    <canvas id="GUI" class="block" width="440" height="440"></canvas>
+    <div class="block" style="height:440;">
+      <canvas id="GUI" width="440" height="440"></canvas>
+      <div id="history"
+        style="display:inline-block; vertical-align:top; background-color:lightgray;">Moves
+      </div>
+    </div>
     <canvas id="white_captured" class="block" width="440" height="110"></canvas>
   </div>
 
+  <div id="TURN"></div>
   <div id="FPS"></div>
 
   <div class="collapsed">
