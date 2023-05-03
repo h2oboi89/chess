@@ -13,18 +13,21 @@ const TYPE_MAP = [
 class Piece {
     #color;
     #type;
+    #image;
     Location;
 
     constructor(color, type, location) {
         this.#color = color;
         this.#type = type;
+        this.#image = this.setImage();
         this.Location = location;
     }
 
     get Color() { return this.#color; }
     get Type() { return this.#type; }
+    get Image() { return this.#image; }
 
-    get Image() {
+    setImage() {
         let side = undefined;
 
         switch (this.#color) {
