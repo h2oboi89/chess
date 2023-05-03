@@ -1,10 +1,8 @@
 "use strict";
 
-import { BOARD_SIZE, SQR_SIZE, CAPTURE_OFFSET } from "./constants.js";
+import { SQR_SIZE, CAPTURE_OFFSET } from "./constants.js";
 import { Piece, COLOR, TYPE } from "./piece.js";
 import { Point } from "./point.js";
-
-let ctx;
 
 const initPieces = () => {
   const pieces = new Array();
