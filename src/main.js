@@ -1,138 +1,158 @@
 "use strict";
 
-import { BOARD_SIZE, SQR_SIZE } from "./constants.js";
+import { BOARD_SIZE, SQR_SIZE, CAPTURE_OFFSET } from "./constants.js";
 import { Piece, COLOR, TYPE } from "./piece.js";
 import { Point } from "./point.js";
 
 let ctx;
 
-const initBoard = () => {
-  const BOARD = new Array(BOARD_SIZE);
+const initPieces = () => {
+  const pieces = new Array();
+  
+  pieces.push(new Piece(COLOR.BLACK, TYPE.ROOK, new Point(0, 0)));
+  pieces.push(new Piece(COLOR.BLACK, TYPE.KNIGHT, new Point(1, 0)));
+  pieces.push(new Piece(COLOR.BLACK, TYPE.BISHOP, new Point(2, 0)));
+  pieces.push(new Piece(COLOR.BLACK, TYPE.QUEEN, new Point(3, 0)));
+  pieces.push(new Piece(COLOR.BLACK, TYPE.KING, new Point(4, 0)));
+  pieces.push(new Piece(COLOR.BLACK, TYPE.BISHOP, new Point(5, 0)));
+  pieces.push(new Piece(COLOR.BLACK, TYPE.KNIGHT, new Point(6, 0)));
+  pieces.push(new Piece(COLOR.BLACK, TYPE.ROOK, new Point(7, 0)));
 
-  for (let i = 0; i < BOARD_SIZE; i++) {
-    BOARD[i] = new Array(BOARD_SIZE);
-    for (let j = 0; j < BOARD_SIZE; j++) {
-      BOARD[i][j] = null;
-    }
-  }
-
-  BOARD[0][0] = new Piece(COLOR.BLACK, TYPE.ROOK);
-  BOARD[1][0] = new Piece(COLOR.BLACK, TYPE.KNIGHT);
-  BOARD[2][0] = new Piece(COLOR.BLACK, TYPE.BISHOP);
-  BOARD[3][0] = new Piece(COLOR.BLACK, TYPE.QUEEN);
-  BOARD[4][0] = new Piece(COLOR.BLACK, TYPE.KING);
-  BOARD[5][0] = new Piece(COLOR.BLACK, TYPE.BISHOP);
-  BOARD[6][0] = new Piece(COLOR.BLACK, TYPE.KNIGHT);
-  BOARD[7][0] = new Piece(COLOR.BLACK, TYPE.ROOK);
-
-  BOARD[0][1] = new Piece(COLOR.BLACK, TYPE.PAWN);
-  BOARD[1][1] = new Piece(COLOR.BLACK, TYPE.PAWN);
-  BOARD[2][1] = new Piece(COLOR.BLACK, TYPE.PAWN);
-  BOARD[3][1] = new Piece(COLOR.BLACK, TYPE.PAWN);
-  BOARD[4][1] = new Piece(COLOR.BLACK, TYPE.PAWN);
-  BOARD[5][1] = new Piece(COLOR.BLACK, TYPE.PAWN);
-  BOARD[6][1] = new Piece(COLOR.BLACK, TYPE.PAWN);
-  BOARD[7][1] = new Piece(COLOR.BLACK, TYPE.PAWN);
+  pieces.push(new Piece(COLOR.BLACK, TYPE.PAWN, new Point(0, 1)));
+  pieces.push(new Piece(COLOR.BLACK, TYPE.PAWN, new Point(1, 1)));
+  pieces.push(new Piece(COLOR.BLACK, TYPE.PAWN, new Point(2, 1)));
+  pieces.push(new Piece(COLOR.BLACK, TYPE.PAWN, new Point(3, 1)));
+  pieces.push(new Piece(COLOR.BLACK, TYPE.PAWN, new Point(4, 1)));
+  pieces.push(new Piece(COLOR.BLACK, TYPE.PAWN, new Point(5, 1)));
+  pieces.push(new Piece(COLOR.BLACK, TYPE.PAWN, new Point(6, 1)));
+  pieces.push(new Piece(COLOR.BLACK, TYPE.PAWN, new Point(7, 1)));
 
 
-  BOARD[0][6] = new Piece(COLOR.WHITE, TYPE.PAWN);
-  BOARD[1][6] = new Piece(COLOR.WHITE, TYPE.PAWN);
-  BOARD[2][6] = new Piece(COLOR.WHITE, TYPE.PAWN);
-  BOARD[3][6] = new Piece(COLOR.WHITE, TYPE.PAWN);
-  BOARD[4][6] = new Piece(COLOR.WHITE, TYPE.PAWN);
-  BOARD[5][6] = new Piece(COLOR.WHITE, TYPE.PAWN);
-  BOARD[6][6] = new Piece(COLOR.WHITE, TYPE.PAWN);
-  BOARD[7][6] = new Piece(COLOR.WHITE, TYPE.PAWN);
+  pieces.push(new Piece(COLOR.WHITE, TYPE.PAWN, new Point(0, 6)));
+  pieces.push(new Piece(COLOR.WHITE, TYPE.PAWN, new Point(1, 6)));
+  pieces.push(new Piece(COLOR.WHITE, TYPE.PAWN, new Point(2, 6)));
+  pieces.push(new Piece(COLOR.WHITE, TYPE.PAWN, new Point(3, 6)));
+  pieces.push(new Piece(COLOR.WHITE, TYPE.PAWN, new Point(4, 6)));
+  pieces.push(new Piece(COLOR.WHITE, TYPE.PAWN, new Point(5, 6)));
+  pieces.push(new Piece(COLOR.WHITE, TYPE.PAWN, new Point(6, 6)));
+  pieces.push(new Piece(COLOR.WHITE, TYPE.PAWN, new Point(7, 6)));
 
-  BOARD[0][7] = new Piece(COLOR.WHITE, TYPE.ROOK);
-  BOARD[1][7] = new Piece(COLOR.WHITE, TYPE.KNIGHT);
-  BOARD[2][7] = new Piece(COLOR.WHITE, TYPE.BISHOP);
-  BOARD[3][7] = new Piece(COLOR.WHITE, TYPE.QUEEN);
-  BOARD[4][7] = new Piece(COLOR.WHITE, TYPE.KING);
-  BOARD[5][7] = new Piece(COLOR.WHITE, TYPE.BISHOP);
-  BOARD[6][7] = new Piece(COLOR.WHITE, TYPE.KNIGHT);
-  BOARD[7][7] = new Piece(COLOR.WHITE, TYPE.ROOK);
+  pieces.push(new Piece(COLOR.WHITE, TYPE.ROOK, new Point(0, 7)));
+  pieces.push(new Piece(COLOR.WHITE, TYPE.KNIGHT, new Point(1, 7)));
+  pieces.push(new Piece(COLOR.WHITE, TYPE.BISHOP, new Point(2, 7)));
+  pieces.push(new Piece(COLOR.WHITE, TYPE.QUEEN, new Point(3, 7)));
+  pieces.push(new Piece(COLOR.WHITE, TYPE.KING, new Point(4, 7)));
+  pieces.push(new Piece(COLOR.WHITE, TYPE.BISHOP, new Point(5, 7)));
+  pieces.push(new Piece(COLOR.WHITE, TYPE.KNIGHT, new Point(6, 7)));
+  pieces.push(new Piece(COLOR.WHITE, TYPE.ROOK, new Point(7, 7)));
 
-  return BOARD;
+  return pieces;
 };
 
 const initState = () => {
-  const STATE = {};
+  const state = new EventTarget();
 
-  STATE.BOARD = initBoard();
+  state.Pieces = initPieces();
 
-  STATE.TURN = COLOR.WHITE;
+  state.Turn = COLOR.WHITE;
 
-  STATE.MOVE = { src: Point.DEFAULT, dst: Point.DEFAULT };
+  state.Move = { src: Point.DEFAULT, dst: Point.DEFAULT };
 
-  STATE.SELECTED = Point.DEFAULT;
+  state.Selected = Point.DEFAULT;
 
-  STATE.CAPTURED = { WHITE: [], BLACK: [] };
+  state.Captured = { White: [], Black: [] };
 
   // TODO: figure out if moves or entire board or something else
-  STATE.HISTORY = [];
+  state.History = [];
 
-  return STATE;
+  return state;
 }
 
-const movePiece = (board, move) => {
-  board[move.dst.X][move.dst.Y] = board[move.src.X][move.src.Y];
-  board[move.src.X][move.src.Y] = null;
+const findPiece = (pieces, location) => {
+  for (let p of pieces) {
+    if (p.Location.equals(location)) {
+      return p;
+    }
+  }
+
+  return null;
+}
+
+const movePiece = (pieces, move) => {
+  const moving = findPiece(pieces, move.src);
+  const captured = findPiece(pieces, move.dst);
+
+  if (captured !== null) {
+    pieces.splice(pieces.indexOf(captured), 1);
+    captured.Location = null;
+
+    if (state.Turn === COLOR.WHITE) {
+      state.Captured.White.push(captured);
+    }
+    else {
+      state.Captured.Black.push(captured);
+    }
+  }
+
+  moving.Location = Point.Copy(move.dst);
 }
 
 const changeTurn = () => {
-  if (STATE.TURN === COLOR.WHITE) {
-    STATE.TURN = COLOR.BLACK;
+  if (state.Turn === COLOR.WHITE) {
+    state.Turn = COLOR.BLACK;
   }
-  else{
-    STATE.TURN = COLOR.WHITE;
+  else {
+    state.Turn = COLOR.WHITE;
   }
+
+  state.dispatchEvent(new CustomEvent("turn", { detail: state.Turn }));
 }
 
 const checkForMoveDestination = () => {
-  if (STATE.SELECTED.equals(STATE.MOVE.src)) {
+  if (state.Selected.equals(state.Move.src)) {
     // Deselect Piece
-    STATE.MOVE.src = Point.DEFAULT;
-    STATE.SELECTED = Point.DEFAULT;
+    state.Move.src = Point.DEFAULT;
+    state.Selected = Point.DEFAULT;
     return;
   }
   else {
     // Move Piece
-    STATE.MOVE.dst = Point.Copy(STATE.SELECTED);
+    state.Move.dst = Point.Copy(state.Selected);
 
     // TODO: check if legal move
-    movePiece(STATE.BOARD, STATE.MOVE);
+    movePiece(state.Pieces, state.Move);
 
     changeTurn();
-    STATE.SELECTED = Point.DEFAULT;
-    STATE.MOVE.src = Point.DEFAULT;
-    STATE.MOVE.dst = Point.DEFAULT;
+    state.Selected = Point.DEFAULT;
+    state.Move.src = Point.DEFAULT;
+    state.Move.dst = Point.DEFAULT;
 
     return;
   }
 }
 
 const checkForMoveSource = () => {
-  const piece = STATE.BOARD[STATE.SELECTED.X][STATE.SELECTED.Y];
+  const piece = findPiece(state.Pieces, state.Selected);
+
   if (piece !== null) {
-    if (piece.Color !== STATE.TURN) {
-      STATE.SELECTED = Point.DEFAULT;
+    if (piece.Color !== state.Turn) {
+      state.Selected = Point.DEFAULT;
       return;
     }
 
     // Select Piece
-    STATE.MOVE.src = Point.Copy(STATE.SELECTED);
-    STATE.SELECTED = Point.DEFAULT;
+    state.Move.src = Point.Copy(state.Selected);
+    state.Selected = Point.DEFAULT;
   }
   else {
-    STATE.MOVE.src = Point.DEFAULT;
+    state.Move.src = Point.DEFAULT;
   }
 };
 
 const detectUserSelect = () => {
-  if (STATE.SELECTED.equals(Point.DEFAULT)) { return; }
+  if (state.Selected.equals(Point.DEFAULT)) { return; }
 
-  if (STATE.MOVE.src.equals(Point.DEFAULT)) {
+  if (state.Move.src.equals(Point.DEFAULT)) {
     checkForMoveSource();
   }
   else {
@@ -140,12 +160,12 @@ const detectUserSelect = () => {
   }
 }
 
-let STATE = initState();
+let state = initState();
 
 const updateState = () => { detectUserSelect(); };
 
 const setSelected = (x, y) => {
-  STATE.SELECTED = new Point(Math.floor(x / SQR_SIZE), Math.floor(y / SQR_SIZE));
+  state.Selected = new Point(Math.floor(x / SQR_SIZE), Math.floor((y - CAPTURE_OFFSET) / SQR_SIZE));
 }
 
-export { STATE, setSelected, updateState }
+export { state, setSelected, updateState }

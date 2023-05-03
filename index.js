@@ -1,19 +1,17 @@
 'use strict';
 
-import { STATE, setSelected, updateState } from './src/main.js';
+import { state, setSelected, updateState } from './src/main.js';
 import { updateFPS } from "./src/fps.js";
-import { draw } from "./src/draw.js";
+import { draw, drawTurn } from "./src/draw.js";
 
-let guiCtx;
-let blackCtx;
-let whiteCtx;
+let ctx;
 
 const mainLoop = () => {
     updateFPS();
 
     updateState();
 
-    draw(guiCtx, blackCtx, whiteCtx, STATE);
+    draw(ctx, state);
 
     requestAnimationFrame(mainLoop);
 }
@@ -23,13 +21,11 @@ const onClick = (e) => { setSelected(e.offsetX, e.offsetY); };
 window.onload = () => {
     const guiCanvas = document.getElementById("GUI");
     guiCanvas.addEventListener("click", onClick);
-    guiCtx = guiCanvas.getContext("2d");
+    ctx = guiCanvas.getContext("2d");
 
-    const blackCanvas = document.getElementById("black_captured");
-    blackCtx = blackCanvas.getContext("2d");
+    state.addEventListener("turn", (turn) => drawTurn(turn));
 
-    const whiteCanvas = document.getElementById("white_captured");
-    whiteCtx = whiteCanvas.getContext("2d");
+    drawTurn({ detail: state.Turn });
 
     requestAnimationFrame(mainLoop);
 };

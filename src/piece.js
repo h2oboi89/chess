@@ -13,10 +13,12 @@ const TYPE_MAP = [
 class Piece {
     #color;
     #type;
+    Location;
 
-    constructor(color, type) {
+    constructor(color, type, location) {
         this.#color = color;
         this.#type = type;
+        this.Location = location;
     }
 
     get Color() { return this.#color; }

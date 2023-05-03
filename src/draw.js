@@ -1,75 +1,82 @@
 'use strict';
 
-import { SQR_SIZE, PIECE_OFFSET, BOARD_SIZE, COLOR } from "./constants.js";
+import { SQR_SIZE, PIECE_OFFSET, BOARD_SIZE, COLOR, CAPTURE_OFFSET } from "./constants.js";
 import { fps } from "./fps.js";
 
 const TURN_DIV = document.getElementById("TURN");
 const FPS_DIV = document.getElementById("FPS");
 
-const drawBoard = (ctx, MOVE) => {
+const drawBoard = (ctx, move) => {
     let white = true;
-    for (let i = 0; i < BOARD_SIZE; i++) {
-        for (let j = 0; j < BOARD_SIZE; j++) {
+    for (let x = 0; x < BOARD_SIZE; x++) {
+        for (let y = 0; y < BOARD_SIZE; y++) {
             if (white) ctx.fillStyle = "tan";
             else ctx.fillStyle = "brown";
             white = !white;
 
-            ctx.fillRect(j * SQR_SIZE, i * SQR_SIZE, SQR_SIZE, SQR_SIZE);
+            ctx.fillRect(y * SQR_SIZE, x * SQR_SIZE + CAPTURE_OFFSET, SQR_SIZE, SQR_SIZE);
         }
 
         white = !white;
     }
 
-    if (MOVE.src.X !== -1 && MOVE.src.Y !== -1) {
+    if (move.src.X !== -1 && move.src.Y !== -1) {
         ctx.globalAlpha = 0.6;
         ctx.fillStyle = "blue";
-        ctx.fillRect(MOVE.src.X * SQR_SIZE, MOVE.src.Y * SQR_SIZE, SQR_SIZE, SQR_SIZE)
+        ctx.fillRect(move.src.X * SQR_SIZE, move.src.Y * SQR_SIZE + CAPTURE_OFFSET, SQR_SIZE, SQR_SIZE)
         ctx.globalAlpha = 1.0;
     }
 };
 
-const drawPieces = (ctx, board) => {
-    for (let i = 0; i < board.length; i++) {
-        for (let j = 0; j < board[i].length; j++) {
-            var piece = board[i][j];
+const drawCaptured = (ctx, side, captured) => {
+    let offsetY = 0;
 
-            if (piece === null) continue;
+    if (side === COLOR.WHITE) {
+        offsetY = CAPTURE_OFFSET + (BOARD_SIZE * SQR_SIZE);
+    }
 
-            ctx.drawImage(piece.Image, i * SQR_SIZE + PIECE_OFFSET, j * SQR_SIZE + PIECE_OFFSET);
-        };
+    let x = 0;
+    let y = 0;
+    for (let piece of captured) {
+        if (x === 8) {
+            y++; x = 0;
+        }
+
+        ctx.drawImage(piece.Image, x * SQR_SIZE + PIECE_OFFSET, y * SQR_SIZE + PIECE_OFFSET + offsetY);
+        x++;
     }
 };
 
-const drawCaptured = (ctx, captured) => {
-    // TODO: draw pieces 8 to a row
+const drawPieces = (ctx, state) => {
+    for (let piece of state.Pieces) {
+        ctx.drawImage(piece.Image, piece.Location.X * SQR_SIZE + PIECE_OFFSET, piece.Location.Y * SQR_SIZE + PIECE_OFFSET + CAPTURE_OFFSET);
+    }
 };
 
-const drawTurn = (state) => {
-    // TODO: do by event of some kind
-    let turn;
+const drawTurn = (e) => {
+    let turnText;
 
-    switch (state.TURN) {
+    switch (e.detail) {
         case COLOR.WHITE:
-            turn = "White to play";
+            turnText = "White to play";
             break;
         case COLOR.BLACK:
-            turn = "Black to play";
+            turnText = "Black to play";
             break;
     }
 
-    TURN_DIV.innerHTML = turn;
+    TURN_DIV.innerHTML = turnText;
 };
 
-const draw = (guiCtx, blackCtx, whiteCtx, state) => {
-    drawBoard(guiCtx, state.MOVE);
-    drawPieces(guiCtx, state.BOARD);
-    drawCaptured(blackCtx, state.CAPTURED.BLACK);
-    drawCaptured(whiteCtx, state.CAPTURED.WHITE);
-    drawTurn(state);
+const draw = (ctx, state) => {
+    drawCaptured(ctx, COLOR.BLACK, state.Captured.Black);
+    drawBoard(ctx, state.Move);
+    drawPieces(ctx, state);
+    drawCaptured(ctx, COLOR.WHITE, state.Captured.White);
 };
 
 setInterval(() => {
     FPS_DIV.innerHTML = `FPS: ${fps}`;
 }, 500);
 
-export { draw };
+export { draw, drawTurn };
